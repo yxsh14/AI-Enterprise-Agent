@@ -19,12 +19,13 @@ class Intent:
 
 
 def detect_intent(question: str) -> Intent:
+    """Regex fallback for single-turn routing when no dialogue state is active."""
     text = question.lower()
 
     ticket_keywords = ["ticket", "jira", "bug", "incident", "request", "escalation"]
     update_keywords = ["update", "edit", "change", "modify"]
     delete_keywords = ["delete", "remove", "close permanently"]
-    employee_keywords = ["employee", "profile", "who is", "manager", "department", "email"]
+    employee_keywords = ["employee", "profile", "who is", "manager", "department"]
     meeting_doc_keywords = [
         "meeting",
         "meeting doc",
@@ -123,12 +124,9 @@ def extract_ticket_id(question: str) -> str | None:
 
 
 def extract_requested_date(question: str) -> str | None:
-    for token in question.replace(",", " ").replace("?", " ").split():
-        if len(token) == 10 and token[4] == "-" and token[7] == "-":
-            year, month, day = token.split("-")
-            if year.isdigit() and month.isdigit() and day.isdigit():
-                return token
-    return None
+    from app.utils.date_resolver import resolve_date
+
+    return resolve_date(question)
 
 
 def extract_update_summary(question: str, ticket_id: str) -> str | None:

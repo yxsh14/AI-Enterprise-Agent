@@ -26,7 +26,7 @@ class Settings:
     confluence_page_subtype: str = os.getenv("CONFLUENCE_PAGE_SUBTYPE", "")
     enable_llm: bool = os.getenv("ENABLE_LLM", "false").lower() == "true"
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5.5")
+    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
     @property
     def jira_is_configured(self) -> bool:

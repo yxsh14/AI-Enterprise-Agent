@@ -90,7 +90,10 @@ class LLMService:
         prompt = (
             "Choose the single safest tool for the user request. "
             "Never choose delete_jira_ticket unless the user explicitly asks to delete/remove a ticket. "
-            "Use read_meeting_docs for questions about meeting issues, action items, or Confluence notes.\n\n"
+            "Use read_meeting_docs for questions about meeting issues, action items, or Confluence notes. "
+            "If the user is only providing an email address to continue a previous ticket action, "
+            "choose create_jira_ticket. "
+            "The user may include their email inside the message text; treat that as identity for write actions.\n\n"
             f"User request: {question}"
         )
 
@@ -121,7 +124,13 @@ class LLMService:
         question: str,
         context_chunks: list[dict],
         fallback_answer: str,
+        resolved_date: str | None = None,
     ) -> tuple[str, str]:
+        """Synthesize a polished answer from RAG context using the LLM.
+
+        Falls back to *fallback_answer* when the LLM is not configured or
+        the API call fails.
+        """
         if not settings.llm_is_configured:
             return fallback_answer, "deterministic_rag"
 
@@ -129,10 +138,19 @@ class LLMService:
             f"Source: {chunk['document']['title']} ({chunk['document']['date']})\n{chunk['text']}"
             for chunk in context_chunks
         )
+
+        date_hint = f"\nRequested meeting date: {resolved_date}" if resolved_date else ""
+
         prompt = (
-            "You are an enterprise assistant. Answer using only the provided meeting context. "
-            "If the context does not answer the question, say what is missing.\n\n"
-            f"Question: {question}\n\nContext:\n{context}"
+            "You are an enterprise assistant. Answer using ONLY the provided context.\n\n"
+            f"User question: {question}{date_hint}\n\n"
+            "Rules:\n"
+            "- If the user asks for a summary, write 3-5 clear sentences.\n"
+            "- Include: meeting title, date, key issues, and action items.\n"
+            "- Do NOT return index usage instructions or meta-documentation.\n"
+            "- If context is insufficient, say what is missing.\n"
+            "- Do not invent facts not in the context.\n\n"
+            f"Context:\n{context}"
         )
 
         try:
@@ -155,6 +173,55 @@ class LLMService:
 
         answer = self._extract_text(payload)
         return (answer or fallback_answer), "llm_rag"
+
+    async def summarize_for_jira(
+        self,
+        context_chunks: list[dict],
+        question: str = "",
+    ) -> str | None:
+        """Generate a concise Jira ticket description from meeting context.
+
+        Returns ``None`` when the LLM is unavailable so the caller can fall
+        back to a deterministic description.
+        """
+        if not settings.llm_is_configured:
+            return None
+
+        context = "\n\n".join(
+            f"Source: {chunk['document']['title']} ({chunk['document']['date']})\n{chunk['text']}"
+            for chunk in context_chunks
+        )
+
+        prompt = (
+            "Write a Jira ticket description from this meeting context.\n\n"
+            "Format:\n"
+            "- 1 line: source meeting title and date\n"
+            "- Bullet list: Issues addressed\n"
+            "- Bullet list: Action items\n"
+            "- Max 400 characters total\n"
+            "- Professional tone, no fluff\n\n"
+            f"Context:\n{context}"
+        )
+
+        try:
+            async with httpx.AsyncClient(timeout=20.0) as client:
+                response = await client.post(
+                    "https://api.openai.com/v1/responses",
+                    headers={
+                        "Authorization": f"Bearer {settings.openai_api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": settings.openai_model,
+                        "input": prompt,
+                    },
+                )
+                response.raise_for_status()
+                payload = response.json()
+        except httpx.HTTPError:
+            return None
+
+        return self._extract_text(payload)
 
     def _extract_tool_plan(self, payload: dict) -> ToolPlan | None:
         for item in payload.get("output", []):
