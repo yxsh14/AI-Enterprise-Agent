@@ -1,0 +1,22 @@
+# Platform Release Readiness
+
+Date: 2026-07-06
+Department: Platform Engineering
+Attendees: Daniel Chen, Priya Sharma
+
+## Issues Addressed
+
+- The release candidate failed smoke tests in the staging environment.
+- API timeout errors appeared after the cache invalidation change.
+- Engineering needs a bug ticket before release approval.
+
+## Decisions
+
+- Block production release until staging smoke tests pass.
+- Roll back the cache invalidation change if the bug is not isolated by noon.
+
+## Action Items
+
+- Create a Jira bug for staging API timeout errors after cache invalidation.
+- Attach smoke test logs and the release candidate version.
+

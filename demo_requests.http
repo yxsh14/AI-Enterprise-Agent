@@ -1,0 +1,97 @@
+### Health check
+GET http://127.0.0.1:8000/health
+
+### Normal business query: employee lookup
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Fetch employee information for Priya Sharma"
+}
+
+### Knowledge base search
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "What issue was addressed about checkout payments in the meeting?",
+  "conversation_id": "demo-conversation"
+}
+
+### Business action: Jira ticket creation
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Create a Jira ticket for urgent customer escalation because checkout payments are failing",
+  "user_email": "daniel.chen@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}
+
+### Challenging query: ambiguous action
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Create a ticket",
+  "user_email": "daniel.chen@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}
+
+### Guarded action: update ticket
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Update ticket HELP-123 to say customer impact is confirmed",
+  "user_email": "priya.sharma@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}
+
+### Guarded action: delete denied
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Delete ticket HELP-123",
+  "user_email": "priya.sharma@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}
+
+### Confluence-style meeting doc read
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Read meeting docs for 2026-07-03",
+  "conversation_id": "demo-conversation"
+}
+
+### RAG over enterprise meeting logs
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "What action item came out of the Acme dashboard latency meeting?",
+  "conversation_id": "demo-conversation"
+}
+
+### Create Jira ticket from explicit meeting docs
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Create a Jira ticket from meeting docs on 2026-07-01",
+  "user_email": "daniel.chen@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}
+
+### Follow-up action using memory: "this" means the last retrieved Confluence context
+POST http://127.0.0.1:8000/ask
+Content-Type: application/json
+
+{
+  "question": "Create a Jira ticket from this",
+  "user_email": "daniel.chen@example-enterprise.com",
+  "conversation_id": "demo-conversation"
+}

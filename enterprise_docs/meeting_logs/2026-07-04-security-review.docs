@@ -1,0 +1,22 @@
+# Security Review
+
+Date: 2026-07-04
+Department: Information Security
+Attendees: Daniel Chen, Priya Sharma
+
+## Issues Addressed
+
+- Two laptops were reported missing from the contractor onboarding inventory.
+- Device management shows one laptop has not checked in for seven days.
+- Security wants ownership confirmed before opening an incident.
+
+## Decisions
+
+- Asset management will verify device assignment records.
+- If ownership is unknown by end of day, Security will open an incident ticket.
+
+## Action Items
+
+- Fetch the assigned owner for the missing laptop asset IDs.
+- Prepare a Jira incident if the asset owner cannot be confirmed.
+

@@ -1,0 +1,23 @@
+# Engineering Daily Standup
+
+Date: 2026-07-01
+Department: Engineering
+Attendees: Daniel Chen, Priya Sharma, Maya Johnson
+
+## Issues Addressed
+
+- Checkout payments showed intermittent failures in the US region after the payment gateway routing change.
+- The failure rate was highest for saved-card transactions.
+- Security confirmed there was no evidence of credential misuse.
+
+## Decisions
+
+- Treat the checkout payment issue as high priority because it directly affects revenue.
+- Daniel Chen will lead technical investigation with the payments platform owner.
+
+## Action Items
+
+- Create a high-priority Jira ticket for payment gateway investigation.
+- Attach checkout error samples, affected region, and saved-card failure pattern to the ticket.
+- Update Customer Success before the next customer escalation review.
+

@@ -1,0 +1,33 @@
+# Employee Profile - Priya Sharma
+
+Document Type: Employee Profile
+Name: Priya Sharma
+Role: Product Manager
+Department: Product
+Location: Bengaluru
+Manager: Amit Rao
+Email: priya.sharma@example-enterprise.com
+
+## Responsibilities
+
+- Owns product requirements for checkout, analytics, and enterprise workflow features.
+- Prioritizes customer-impacting bugs with Engineering and Customer Operations.
+- Reviews escalation trends from meeting logs and Jira reports.
+
+## Systems Owned
+
+- Product roadmap board
+- Checkout requirements documentation
+- Analytics release notes
+
+## Current Projects
+
+- Checkout reliability improvements
+- Dashboard performance review
+- Enterprise assistant workflow demo
+
+## Escalation Contact Rules
+
+- Contact Priya for product priority decisions.
+- Include customer impact, affected feature, and requested deadline.
+

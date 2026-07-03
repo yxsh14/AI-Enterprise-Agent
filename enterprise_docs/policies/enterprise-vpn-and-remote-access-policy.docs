@@ -1,0 +1,32 @@
+# Enterprise VPN and Remote Access Policy Guidelines
+
+Document Type: Enterprise Policy
+Owner: Information Security
+Effective Date: 2026-07-01
+
+## Purpose
+
+This policy defines how employees securely connect to enterprise systems from remote locations.
+
+## Policy Rules
+
+- VPN access requires MFA enrollment.
+- Employees must connect from trusted devices with current endpoint protection.
+- Repeated MFA failures must be escalated to Information Security.
+- VPN profile resets may be performed by IT Support after identity verification.
+- Remote access must be disabled when employment or contract status ends.
+
+## Troubleshooting Guidance
+
+- Confirm MFA enrollment.
+- Confirm the device is company-managed.
+- Reset the VPN profile.
+- Ask the user to retry from a trusted network.
+- Escalate to Security if MFA succeeds but VPN profile rejection continues.
+
+## Jira Action Guidance
+
+- Use issue type `Task` for standard VPN troubleshooting.
+- Use issue type `Incident` if many employees are affected or remote access is unavailable during business-critical support.
+- Use priority `Medium` for individual access failures.
+- Use priority `High` for widespread remote access disruption.

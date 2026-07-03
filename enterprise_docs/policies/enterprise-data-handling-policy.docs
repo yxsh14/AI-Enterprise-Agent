@@ -1,0 +1,31 @@
+# Enterprise Data Handling Policy
+
+Document Type: Enterprise Policy
+Owner: Information Security
+Effective Date: 2026-07-01
+
+## Purpose
+
+This policy defines how employees classify, share, store, and protect company and customer data.
+
+## Data Categories
+
+- Public: Approved public information.
+- Internal: Company-only operating information.
+- Confidential: Customer data, employee data, financial data, security data, and unreleased product plans.
+- Restricted: Credentials, production secrets, private keys, regulated personal data, and incident evidence.
+
+## Policy Rules
+
+- Confidential and Restricted data must not be pasted into public AI tools.
+- Restricted data must be stored only in approved secure systems.
+- Customer data exports require manager approval and must be deleted when no longer needed.
+- Production credentials must never be shared in chat, email, or tickets.
+- Incident evidence must be attached only to restricted-access Jira tickets or approved security storage.
+
+## Jira Action Guidance
+
+- Use issue type `Incident` for suspected data exposure.
+- Use issue type `Service Request` for approved data access or export requests.
+- Use priority `High` for suspected credential exposure or customer data leakage.
+

@@ -1,0 +1,22 @@
+# Customer Escalation Review
+
+Date: 2026-07-02
+Department: Customer Operations
+Attendees: Maya Johnson, Priya Sharma
+
+## Issues Addressed
+
+- Acme Corp reported slow dashboard loading after the analytics release.
+- The dashboard latency issue affects executive reporting during business reviews.
+- Customer Success needs a single Jira issue that links customer impact and analytics logs.
+
+## Decisions
+
+- Open a customer-impact ticket and mark it medium priority unless more customers are affected.
+- Product will review whether the dashboard query can be cached.
+
+## Action Items
+
+- Create a Jira ticket for Acme Corp dashboard latency after the analytics release.
+- Include customer impact, affected dashboard name, and analytics release version.
+

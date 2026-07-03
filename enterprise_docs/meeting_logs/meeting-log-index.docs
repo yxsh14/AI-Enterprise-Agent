@@ -1,0 +1,23 @@
+# Meeting Log Index
+
+Date: 2026-07-01 to 2026-07-07
+Department: Cross-functional
+Attendees: Engineering, Product, Customer Operations, Security, Revenue Operations, People Operations
+
+## Meeting Log Table
+
+| Date | Live Doc Title | Primary Issue Addressed | Recommended Jira Action | Expected Issue Type | Priority |
+| --- | --- | --- | --- | --- | --- |
+| 2026-07-01 | Engineering Daily Standup | Checkout payments showed intermittent failures in the US region after the payment gateway routing change. | Create a ticket for payment gateway investigation and attach checkout error samples. | Bug | High |
+| 2026-07-02 | Customer Escalation Review | Acme Corp reported slow dashboard loading after the analytics release. | Create a customer-impact ticket with dashboard latency details. | Task | Medium |
+| 2026-07-03 | Operations Sync | VPN login failures increased after the MFA policy rollout. | Monitor VPN support volume and create a ticket if failures continue. | Task | Medium |
+| 2026-07-04 | Security Review | Two laptops were reported missing from contractor onboarding inventory. | Prepare a Jira incident if asset ownership cannot be confirmed. | Incident | High |
+| 2026-07-05 | Sales Operations Review | Sales representatives reported duplicate customer records after the CRM import. | Create a service request for CRM duplicate account cleanup. | Service Request | Medium |
+| 2026-07-06 | Platform Release Readiness | The release candidate failed smoke tests in staging after the cache invalidation change. | Create a bug for staging API timeout errors. | Bug | High |
+| 2026-07-07 | HR Onboarding Sync | New hire laptop provisioning is delayed for the August onboarding group. | Create a task for laptop and application access tracking. | Task | Medium |
+
+## Usage Notes
+
+- Use this index when a user asks which meeting discussed a particular issue.
+- Use the individual meeting live docs for full details and ticket descriptions.
+- If a user asks "create a ticket from this" after an index answer, prefer the individual meeting live doc that matches the selected row.

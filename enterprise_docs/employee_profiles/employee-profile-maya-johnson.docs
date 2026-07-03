@@ -1,0 +1,33 @@
+# Employee Profile - Maya Johnson
+
+Document Type: Employee Profile
+Name: Maya Johnson
+Role: Customer Success Lead
+Department: Customer Operations
+Location: New York
+Manager: Lucas Martin
+Email: maya.johnson@example-enterprise.com
+
+## Responsibilities
+
+- Owns customer escalation communication and business impact summaries.
+- Coordinates with Product and Engineering on customer-impacting Jira tickets.
+- Tracks customer follow-up actions from meeting logs.
+
+## Systems Owned
+
+- Customer escalation tracker
+- Business impact summaries
+- Customer communication templates
+
+## Current Projects
+
+- Acme dashboard latency escalation
+- Checkout payment customer communications
+- Customer-impact workflow improvements
+
+## Escalation Contact Rules
+
+- Contact Maya for customer-facing impact language, escalation status, and affected account details.
+- Include customer name, business impact, current workaround, and requested response timeline.
+

@@ -1,0 +1,22 @@
+# Sales Operations Review
+
+Date: 2026-07-05
+Department: Revenue Operations
+Attendees: Priya Sharma, Maya Johnson
+
+## Issues Addressed
+
+- Sales representatives reported duplicate customer records after the CRM import.
+- Duplicate records created confusion in renewal forecasting.
+- The operations team needs a cleanup workflow before Monday pipeline review.
+
+## Decisions
+
+- Treat the CRM duplicate record cleanup as a service request, not an incident.
+- Customer Operations will validate the top 20 affected accounts after cleanup.
+
+## Action Items
+
+- Create a Jira service request for CRM duplicate account cleanup.
+- Include impacted account list, import batch ID, and renewal forecast risk.
+

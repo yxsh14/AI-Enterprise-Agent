@@ -1,0 +1,33 @@
+# Employee Profile - Daniel Chen
+
+Document Type: Employee Profile
+Name: Daniel Chen
+Role: Security Engineer
+Department: Information Security
+Location: Singapore
+Manager: Meera Iyer
+Email: daniel.chen@example-enterprise.com
+
+## Responsibilities
+
+- Owns MFA, VPN security review, and incident response support.
+- Reviews security impact for missing assets, access requests, and remote access failures.
+- Partners with Engineering on payment and platform incidents when security validation is needed.
+
+## Systems Owned
+
+- MFA policy configuration
+- VPN security review workflow
+- Security incident queue
+
+## Current Projects
+
+- MFA rollout monitoring
+- Contractor laptop inventory review
+- Security incident triage improvements
+
+## Escalation Contact Rules
+
+- Contact Daniel for Security review, missing asset incidents, or repeated MFA failures.
+- Include affected user, system, timeline, and suspected risk.
+

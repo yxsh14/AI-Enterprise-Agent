@@ -1,0 +1,22 @@
+# HR Onboarding Sync
+
+Date: 2026-07-07
+Department: People Operations
+Attendees: Maya Johnson, Priya Sharma
+
+## Issues Addressed
+
+- New hire laptop provisioning is delayed for the August onboarding group.
+- Three hires do not have application access requests approved.
+- People Operations needs a workflow ticket to track provisioning status.
+
+## Decisions
+
+- Handle onboarding provisioning as a task because there is no active outage.
+- Escalate only if devices are not shipped within two business days.
+
+## Action Items
+
+- Create a Jira task for August onboarding laptop and application access tracking.
+- Include new hire count, required applications, and shipment deadline.
+

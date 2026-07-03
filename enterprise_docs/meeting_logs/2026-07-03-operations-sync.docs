@@ -1,0 +1,22 @@
+# Operations Sync
+
+Date: 2026-07-03
+Department: Operations
+Attendees: Daniel Chen, Maya Johnson
+
+## Issues Addressed
+
+- VPN login failures increased after the MFA policy rollout.
+- Most reports mention successful MFA approval followed by VPN profile rejection.
+- The support team needs a troubleshooting article linked in future incidents.
+
+## Decisions
+
+- Do not roll back MFA policy.
+- Monitor VPN support volume for the next 48 hours.
+
+## Action Items
+
+- Review the VPN profile reset process.
+- Create a medium-priority Jira ticket if failures continue past the monitoring window.
+

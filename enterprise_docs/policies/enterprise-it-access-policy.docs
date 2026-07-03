@@ -1,0 +1,39 @@
+# Enterprise IT Access Policy
+
+Document Type: Enterprise Policy
+Owner: Information Security
+Effective Date: 2026-07-01
+
+## Purpose
+
+This policy defines how employees request, approve, review, and remove access to enterprise systems.
+
+## Scope
+
+Applies to all employees, contractors, and temporary workers who use company-managed applications, infrastructure, devices, or data.
+
+## Policy Rules
+
+- Access must be requested through an approved Jira service request.
+- Every access request must include the business justification, system name, access level, and manager approval.
+- Privileged access requires approval from both the manager and Information Security.
+- Contractor access must have an expiry date.
+- Access should be reviewed every quarter for high-risk systems.
+- Access must be removed within one business day after termination or role change.
+
+## Jira Action Guidance
+
+- Use issue type `Service Request` for new access, access changes, or access removal.
+- Use priority `High` when privileged access blocks production support.
+- Use priority `Medium` for standard onboarding or role-change access.
+
+## Required Ticket Fields
+
+- Requester
+- Employee or contractor name
+- System name
+- Access level
+- Business justification
+- Manager approval
+- Expiry date for contractors
+

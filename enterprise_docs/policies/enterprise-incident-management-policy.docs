@@ -1,0 +1,38 @@
+# Enterprise Incident Management Policy
+
+Document Type: Enterprise Policy
+Owner: Operations
+Effective Date: 2026-07-01
+
+## Purpose
+
+This policy defines how customer-impacting, security-impacting, and production-impacting incidents are triaged and tracked.
+
+## Severity Levels
+
+- Severity 1: Active production outage, payment failure, security incident, or major customer business disruption.
+- Severity 2: Degraded production behavior affecting a subset of customers.
+- Severity 3: Non-critical issue with workaround available.
+
+## Response Targets
+
+- Severity 1 incidents must be acknowledged within 15 minutes.
+- Severity 2 incidents must be acknowledged within 1 business hour.
+- Severity 3 incidents must be acknowledged within 1 business day.
+
+## Jira Action Guidance
+
+- Use issue type `Incident` for outages, confirmed security events, missing company assets, or active customer-impacting failures.
+- Use issue type `Bug` when the issue is a reproducible product defect without active incident status.
+- Use priority `High` for Severity 1 and security-impacting incidents.
+
+## Required Ticket Fields
+
+- Customer or internal impact
+- Start time
+- Affected system
+- Severity
+- Current owner
+- Mitigation or workaround
+- Communication channel
+
