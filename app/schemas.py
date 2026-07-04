@@ -8,6 +8,7 @@ ActionName = Literal[
     "create_jira_ticket",
     "update_jira_ticket",
     "delete_jira_ticket",
+    "list_jira_tickets",
     "read_meeting_docs",
     "fetch_employee",
     "integration_error",

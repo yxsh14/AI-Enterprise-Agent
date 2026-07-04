@@ -7,6 +7,7 @@ A FastAPI enterprise assistant for the build challenge. It exposes `POST /ask`, 
 - Answers enterprise questions using Confluence page retrieval.
 - Retrieves meeting notes, action items, issue summaries, and employee profile details from Confluence.
 - Creates, updates, and deletes Jira tickets through real Jira Cloud APIs.
+- Lists and searches Jira tickets through Jira JQL.
 - Infers Jira issue type from the user prompt and retrieved Confluence context.
 - Keeps conversation memory so follow-ups like "create a ticket from this" use the last retrieved Confluence context.
 - Uses simple RAG as the mandatory engineering improvement.
@@ -43,7 +44,8 @@ tests/                    Tests with integration-boundary stubs
 4. RAG chunks the documents, scores them, and answers from the retrieved context.
 5. The retrieved context is stored by `conversation_id`.
 6. If the user later says "create a ticket from this", the assistant uses the remembered Confluence context.
-7. Jira actions are executed through the Jira Cloud API.
+7. If the user asks to list/search tickets, the assistant performs a read-only Jira JQL search.
+8. Jira write actions are executed through the Jira Cloud API.
 
 ## Endpoint
 
@@ -109,6 +111,7 @@ The Jira service calls:
 - `POST /rest/api/3/issue`
 - `PUT /rest/api/3/issue/{issueIdOrKey}`
 - `DELETE /rest/api/3/issue/{issueIdOrKey}`
+- `POST /rest/api/3/search/jql`
 
 ## Confluence Configuration
 
@@ -157,6 +160,7 @@ The basic implementation would directly answer from static local data. This vers
 
 - Empty or incomplete questions are rejected by Pydantic validation.
 - Jira create/update/delete requires `user_email` for auditability.
+- Jira list/search requests never enter ticket-creation slot filling.
 - Ambiguous ticket creation asks for a clearer issue description.
 - Update/delete requires an explicit ticket ID.
 - Read-only Confluence questions do not trigger Jira writes.

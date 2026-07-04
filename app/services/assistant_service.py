@@ -2,6 +2,7 @@ from app.schemas import AskResponse
 from app.services.confluence_service import ConfluenceService
 from app.services.conversation_router import (
     is_employee_lookup_question,
+    is_jira_ticket_read_question,
     is_ticket_continuation,
     resolve_fresh_intent,
 )
@@ -44,6 +45,10 @@ class AssistantService:
         try:
             # Step 1 — Active dialogue: slot-filling always wins over fresh intent.
             if state.is_active:
+                if is_jira_ticket_read_question(question):
+                    self.memory_service.clear_dialogue(memory_key)
+                    return await self._handle_jira_ticket_read(question, memory_key)
+
                 active_response = await self._handle_active_dialogue(
                     question=question,
                     user_email=effective_email,
@@ -70,6 +75,9 @@ class AssistantService:
 
             if intent_name == "delete_jira_ticket":
                 return await self._handle_ticket_delete(question, effective_email, memory_key)
+
+            if intent_name == "list_jira_tickets":
+                return await self._handle_jira_ticket_read(question, memory_key)
 
             if intent_name in {"fetch_employee", "read_meeting_docs"}:
                 return await self._handle_rag_question(question, memory_key)
@@ -146,12 +154,118 @@ class AssistantService:
             "create_jira_ticket",
             "update_jira_ticket",
             "delete_jira_ticket",
+            "list_jira_tickets",
             "read_meeting_docs",
             "fetch_employee",
         }:
             return llm_plan.tool_name
 
         return resolve_fresh_intent(question)
+
+    async def _handle_jira_ticket_read(self, question: str, memory_key: str) -> AskResponse:
+        jql = await self._build_ticket_read_jql(question, memory_key)
+        result = await self.jira_service.search_tickets(jql=jql, max_results=10)
+        tickets = result["tickets"]
+
+        if not tickets:
+            return AskResponse(
+                answer="I could not find any Jira tickets matching that request.",
+                action="list_jira_tickets",
+                data=result,
+                source="jira",
+            )
+
+        ticket_lines = [
+            f"{ticket['ticket_id']} [{ticket['status']}] {ticket['summary']}"
+            for ticket in tickets
+        ]
+        return AskResponse(
+            answer="Here are the matching Jira tickets:\n" + "\n".join(ticket_lines),
+            action="list_jira_tickets",
+            data=result,
+            source="jira",
+        )
+
+    async def _build_ticket_read_jql(self, question: str, memory_key: str) -> str:
+        text = question.lower()
+        base = f"project = {self.jira_service.project_key}"
+
+        if any(phrase in text for phrase in ["this meeting", "that meeting", "related to this", "related to it", "related to meeting"]):
+            resolved_date = resolve_date(question)
+            if resolved_date:
+                all_docs = await self.confluence_service.get_meeting_documents()
+                dated_docs = [
+                    doc
+                    for doc in all_docs
+                    if doc.get("date") == resolved_date
+                    and doc.get("parent_id") == _MEETING_FOLDER_ID
+                    and "meeting log index" not in doc.get("title", "").lower()
+                ]
+                terms = self._ticket_search_terms_from_documents(dated_docs)
+                if terms:
+                    clauses = [f'text ~ "{term}"' for term in terms]
+                    return f"{base} AND ({' OR '.join(clauses)}) ORDER BY created DESC"
+
+            terms = self._ticket_search_terms_from_memory(memory_key)
+            if terms:
+                clauses = [f'text ~ "{term}"' for term in terms]
+                return f"{base} AND ({' OR '.join(clauses)}) ORDER BY created DESC"
+
+        ticket_id = extract_ticket_id(question)
+        if ticket_id:
+            return f"issue = {ticket_id}"
+
+        return f"{base} ORDER BY created DESC"
+
+    def _ticket_search_terms_from_documents(self, documents: list[dict]) -> list[str]:
+        terms = []
+        for doc in documents[:2]:
+            for phrase in self._ticket_search_terms_from_document(doc):
+                cleaned = phrase.strip(" .")
+                if cleaned:
+                    terms.append(cleaned[:70])
+        return terms[:3]
+
+    def _ticket_search_terms_from_memory(self, memory_key: str) -> list[str]:
+        docs = self.memory_service.get_last_documents(memory_key)
+        if not docs:
+            return []
+
+        terms = []
+        for doc in docs[:2]:
+            for phrase in self._ticket_search_terms_from_document(doc):
+                cleaned = phrase.strip(" .")
+                if cleaned:
+                    terms.append(cleaned[:70])
+        return terms[:3]
+
+    def _ticket_search_terms_from_document(self, document: dict) -> list[str]:
+        content = document.get("content", "")
+        lowered = content.lower()
+        terms = []
+
+        known_phrases = [
+            "staging api timeout",
+            "cache invalidation",
+            "failed smoke tests",
+            "payment gateway investigation",
+            "checkout error samples",
+            "vpn profile reset",
+            "dashboard latency",
+            "crm duplicate account cleanup",
+            "missing laptop",
+        ]
+        terms.extend(phrase for phrase in known_phrases if phrase in lowered)
+
+        action_summary = self.rag_service.extract_action_summary(document)
+        if action_summary:
+            terms.append(action_summary)
+
+        title = document.get("title", "")
+        if title:
+            terms.append(title)
+
+        return terms
 
     async def _handle_ticket_request(
         self,

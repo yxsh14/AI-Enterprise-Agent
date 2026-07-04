@@ -6,6 +6,7 @@ IntentName = Literal[
     "create_jira_ticket",
     "update_jira_ticket",
     "delete_jira_ticket",
+    "list_jira_tickets",
     "read_meeting_docs",
     "fetch_employee",
     "general_answer",
@@ -50,6 +51,8 @@ def detect_intent(question: str) -> Intent:
         "payment",
     ]
 
+    if _is_jira_ticket_read_request(text):
+        return Intent("list_jira_tickets", 0.9)
     if any(keyword in text for keyword in meeting_doc_keywords) and not (
         "create" in text and any(keyword in text for keyword in ticket_keywords)
     ):
@@ -70,6 +73,23 @@ def detect_intent(question: str) -> Intent:
         return Intent("read_meeting_docs", 0.75)
 
     return Intent("general_answer", 0.4)
+
+
+def _is_jira_ticket_read_request(text: str) -> bool:
+    read_verbs = ("list", "show", "provide", "get", "fetch", "display", "what are", "any")
+    ticket_terms = ("ticket", "tickets", "jira", "issue", "issues")
+    create_terms = ("create", "open", "make", "raise", "file")
+
+    if any(term in text for term in create_terms):
+        return False
+
+    if any(verb in text for verb in read_verbs) and any(term in text for term in ticket_terms):
+        return True
+
+    if "related to this meeting" in text and any(term in text for term in ticket_terms):
+        return True
+
+    return False
 
 
 def extract_ticket_details(question: str) -> tuple[str | None, str | None, str]:

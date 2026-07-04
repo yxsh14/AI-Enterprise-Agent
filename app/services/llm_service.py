@@ -62,6 +62,17 @@ class LLMService:
             },
             {
                 "type": "function",
+                "name": "list_jira_tickets",
+                "description": "List or search Jira tickets without creating a new ticket.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"query": {"type": "string"}},
+                    "required": ["query"],
+                    "additionalProperties": False,
+                },
+            },
+            {
+                "type": "function",
                 "name": "read_meeting_docs",
                 "description": "Retrieve meeting documents or answer questions from meeting context.",
                 "parameters": {

@@ -552,3 +552,133 @@ def test_guardrail_create_ticket_needs_clarification() -> None:
     body = response.json()
     assert body["action"] == "needs_clarification"
 
+
+def test_list_jira_tickets_does_not_create_ticket(monkeypatch) -> None:
+    async def fake_search_tickets(jql, max_results=10):
+        return {
+            "jql": jql,
+            "total": 2,
+            "tickets": [
+                {
+                    "ticket_id": "SCRUM-5",
+                    "ticket_url": "https://example.atlassian.net/browse/SCRUM-5",
+                    "summary": "Create a Jira bug for staging API timeout errors",
+                    "status": "To Do",
+                    "issue_type": "Bug",
+                    "priority": "High",
+                    "created": "2026-07-04T10:00:00.000+0000",
+                    "updated": "2026-07-04T10:00:00.000+0000",
+                },
+                {
+                    "ticket_id": "SCRUM-9",
+                    "ticket_url": "https://example.atlassian.net/browse/SCRUM-9",
+                    "summary": "Old accidental ticket",
+                    "status": "To Do",
+                    "issue_type": "Task",
+                    "priority": "Medium",
+                    "created": "2026-07-04T10:05:00.000+0000",
+                    "updated": "2026-07-04T10:05:00.000+0000",
+                },
+            ],
+            "mode": "jira",
+        }
+
+    monkeypatch.setattr(assistant.jira_service, "search_tickets", fake_search_tickets)
+
+    response = client.post(
+        "/ask",
+        json={
+            "question": "Provide me with the list of tickets from Jira",
+            "conversation_id": "list-jira-test",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["action"] == "list_jira_tickets"
+    assert "SCRUM-5" in body["answer"]
+    assert body["data"]["jql"].startswith("project =")
+
+
+def test_pending_email_state_does_not_hijack_jira_list_request(monkeypatch) -> None:
+    async def fake_search_tickets(jql, max_results=10):
+        return {
+            "jql": jql,
+            "total": 1,
+            "tickets": [
+                {
+                    "ticket_id": "SCRUM-5",
+                    "ticket_url": "https://example.atlassian.net/browse/SCRUM-5",
+                    "summary": "Create a Jira bug for staging API timeout errors",
+                    "status": "To Do",
+                    "issue_type": "Bug",
+                    "priority": "High",
+                    "created": "2026-07-04T10:00:00.000+0000",
+                    "updated": "2026-07-04T10:00:00.000+0000",
+                }
+            ],
+            "mode": "jira",
+        }
+
+    monkeypatch.setattr(assistant.jira_service, "search_tickets", fake_search_tickets)
+
+    conversation_id = "pending-email-list-test"
+    assistant.memory_service.set_awaiting_email(
+        conversation_id,
+        "create_jira_ticket",
+        "Create a Jira ticket for an old request",
+    )
+
+    response = client.post(
+        "/ask",
+        json={
+            "question": "Provide me with the list of tickets from Jira",
+            "conversation_id": conversation_id,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["action"] == "list_jira_tickets"
+    assert "Created Jira ticket" not in body["answer"]
+
+
+def test_search_jira_tickets_related_to_dated_meeting(monkeypatch) -> None:
+    async def fake_get_documents():
+        return [OPERATIONS_SYNC_DOC]
+
+    async def fake_search_tickets(jql, max_results=10):
+        return {
+            "jql": jql,
+            "total": 1,
+            "tickets": [
+                {
+                    "ticket_id": "SCRUM-7",
+                    "ticket_url": "https://example.atlassian.net/browse/SCRUM-7",
+                    "summary": "Review the VPN profile reset process.",
+                    "status": "To Do",
+                    "issue_type": "Task",
+                    "priority": "Medium",
+                    "created": "2026-07-04T10:00:00.000+0000",
+                    "updated": "2026-07-04T10:00:00.000+0000",
+                }
+            ],
+            "mode": "jira",
+        }
+
+    monkeypatch.setattr(assistant.confluence_service, "get_meeting_documents", fake_get_documents)
+    monkeypatch.setattr(assistant.jira_service, "search_tickets", fake_search_tickets)
+
+    response = client.post(
+        "/ask",
+        json={
+            "question": "Is there any ticket related to this meeting on 03 July 2026?",
+            "conversation_id": "dated-related-ticket-test",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["action"] == "list_jira_tickets"
+    assert "VPN profile" in body["answer"]
+    assert "text ~" in body["data"]["jql"]

@@ -5,6 +5,11 @@ from __future__ import annotations
 from app.utils.intent import detect_intent
 
 
+def is_jira_ticket_read_question(question: str) -> bool:
+    """True when the user wants to read/search Jira tickets, not create one."""
+    return detect_intent(question).name == "list_jira_tickets"
+
+
 def is_ticket_continuation(question: str, has_meeting_context: bool) -> bool:
     """True when the user is continuing a meeting → ticket flow."""
     if not has_meeting_context:
@@ -47,6 +52,8 @@ def is_employee_lookup_question(question: str) -> bool:
 
 def resolve_fresh_intent(question: str) -> str:
     """Classify a new turn when no dialogue state is active (regex fallback)."""
+    if is_jira_ticket_read_question(question):
+        return "list_jira_tickets"
     if is_employee_lookup_question(question):
         return "fetch_employee"
     return detect_intent(question).name

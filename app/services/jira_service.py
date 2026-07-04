@@ -7,6 +7,10 @@ from app.core.errors import ExternalToolError, IntegrationNotConfiguredError
 
 
 class JiraService:
+    @property
+    def project_key(self) -> str:
+        return settings.jira_project_key
+
     async def create_ticket(
         self,
         summary: str,
@@ -122,6 +126,59 @@ class JiraService:
         return {
             "ticket_id": ticket_id,
             "deleted": True,
+            "mode": "jira",
+        }
+
+    async def list_tickets(self, max_results: int = 10) -> dict:
+        jql = f"project = {settings.jira_project_key} ORDER BY created DESC"
+        return await self.search_tickets(jql=jql, max_results=max_results)
+
+    async def search_tickets(self, jql: str, max_results: int = 10) -> dict:
+        if not settings.jira_is_configured:
+            raise IntegrationNotConfiguredError(
+                "Jira is not configured. Set JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, "
+                "and JIRA_PROJECT_KEY."
+            )
+
+        payload = {
+            "jql": jql,
+            "maxResults": max_results,
+            "fields": ["summary", "status", "issuetype", "priority", "created", "updated"],
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                response = await client.post(
+                    f"{settings.jira_base_url.rstrip('/')}/rest/api/3/search/jql",
+                    auth=(settings.jira_email, settings.jira_api_token),
+                    headers={"Accept": "application/json", "Content-Type": "application/json"},
+                    json=payload,
+                )
+                response.raise_for_status()
+                result = response.json()
+        except httpx.HTTPError as exc:
+            raise ExternalToolError(f"Jira search API call failed: {exc.__class__.__name__}") from exc
+
+        issues = []
+        for issue in result.get("issues", []):
+            fields = issue.get("fields", {})
+            issues.append(
+                {
+                    "ticket_id": issue.get("key"),
+                    "ticket_url": f"{settings.jira_base_url.rstrip('/')}/browse/{issue.get('key')}",
+                    "summary": fields.get("summary"),
+                    "status": (fields.get("status") or {}).get("name"),
+                    "issue_type": (fields.get("issuetype") or {}).get("name"),
+                    "priority": (fields.get("priority") or {}).get("name"),
+                    "created": fields.get("created"),
+                    "updated": fields.get("updated"),
+                }
+            )
+
+        return {
+            "jql": jql,
+            "total": result.get("total", len(issues)),
+            "tickets": issues,
             "mode": "jira",
         }
 

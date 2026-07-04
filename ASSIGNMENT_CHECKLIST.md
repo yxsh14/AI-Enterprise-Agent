@@ -9,6 +9,7 @@
 - [x] Returns a meaningful response.
 - [x] Supports business action: create Jira ticket.
 - [x] Supports additional business actions: update Jira ticket and delete Jira ticket.
+- [x] Supports Jira ticket listing/search through JQL.
 - [x] Supports enterprise information retrieval from Confluence.
 - [x] Supports employee information retrieval from Confluence employee profile pages.
 
@@ -84,6 +85,6 @@ Expected behavior:
 - [x] Upload employee profile docs to Confluence.
 - [x] If docs are in separate folders, update `CONFLUENCE_FOLDER_IDS`.
 - [x] Run a live `/ask` query against Confluence.
-- [ ] Add API-readable content to Confluence page: `Enterprise VPN and Remote Access Policy Guidelines`.
+- [x] Add API-readable content to Confluence page: `Enterprise VPN and Remote Access Policy Guidelines`.
 - [x] Add content to empty Confluence page: `2026-07-02-customer-escalation-review`.
 - [x] Run a live Jira ticket creation request.
